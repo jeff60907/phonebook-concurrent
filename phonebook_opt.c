@@ -44,7 +44,6 @@ append_a *new_append_a(char *ptr, char *eptr, int tid, int ntd,
 void append(void *arg)
 {
     struct timespec start, end;
-    double cpu_time;
 
     clock_gettime(CLOCK_REALTIME, &start);
 
@@ -64,7 +63,7 @@ void append(void *arg)
         app->pLast->pNext = NULL;
     }
     clock_gettime(CLOCK_REALTIME, &end);
-    cpu_time = diff_in_second(start, end);
+ 
 
     dprintf("thread take %lf sec, count %d\n", cpu_time, count);
 
@@ -74,11 +73,12 @@ void append(void *arg)
 void show_entry(entry *pHead)
 {
     while (pHead != NULL) {
-        printf("lastName = %s\n", pHead->lastName);
+        printf("%s", pHead->lastName);
         pHead = pHead->pNext;
     }
 }
 
+#ifdef PROFILE
 static double diff_in_second(struct timespec t1, struct timespec t2)
 {
     struct timespec diff;
@@ -91,3 +91,4 @@ static double diff_in_second(struct timespec t1, struct timespec t2)
     }
     return (diff.tv_sec + diff.tv_nsec / 1000000000.0);
 }
+#endif

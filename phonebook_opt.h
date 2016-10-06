@@ -46,6 +46,7 @@ void append(void *arg);
 
 void show_entry(entry *pHead);
 
+#ifdef DEBUG
 static double diff_in_second(struct timespec t1, struct timespec t2);
-
+#endif
 #endif

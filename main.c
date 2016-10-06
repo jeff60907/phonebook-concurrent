@@ -4,12 +4,12 @@
 #include <string.h>
 #include <time.h>
 #include <assert.h>
-
 #include <unistd.h>
 #include <pthread.h>
 #include <sys/mman.h>
 
 #include IMPL
+
 
 #define DICT_FILE "./dictionary/words.txt"
 
@@ -28,6 +28,7 @@ static double diff_in_second(struct timespec t1, struct timespec t2)
 
 int main(int argc, char *argv[])
 {
+  
 #ifndef OPT
     FILE *fp;
     int i = 0;
@@ -70,7 +71,7 @@ int main(int argc, char *argv[])
 #if defined(OPT)
 
 #ifndef THREAD_NUM
-#define THREAD_NUM 4
+#define THREAD_NUM 8
 #endif
     clock_gettime(CLOCK_REALTIME, &start);
 
@@ -100,17 +101,13 @@ int main(int argc, char *argv[])
 
     entry *etmp;
     pHead = pHead->pNext;
-    for (int i = 0; i < THREAD_NUM; i++) {
-        if (i == 0) {
-            pHead = app[i]->pHead->pNext;
-            dprintf("Connect %d head string %s %p\n", i,
-                    app[i]->pHead->pNext->lastName, app[i]->ptr);
-        } else {
-            etmp->pNext = app[i]->pHead->pNext;
-            dprintf("Connect %d head string %s %p\n", i,
-                    app[i]->pHead->pNext->lastName, app[i]->ptr);
-        }
-
+    pHead = app[0]->pHead;
+    dprintf("Connect %d head string %s %p\n", i,
+                app[0]->pHead->pNext->lastName, app[0]->ptr);
+    for (int i = 1; i < THREAD_NUM; i++) {
+        etmp->pNext = app[i]->pHead;
+        dprintf("Connect %d head string %s %p\n", i, 
+                app[i]->pHead->pNext->lastName, app[i]->ptr);
         etmp = app[i]->pLast;
         dprintf("Connect %d tail string %s %p\n", i,
                 app[i]->pLast->lastName, app[i]->ptr);
@@ -133,12 +130,11 @@ int main(int argc, char *argv[])
     cpu_time1 = diff_in_second(start, end);
 #endif
 
+
 #ifndef OPT
     /* close file as soon as possible */
     fclose(fp);
 #endif
-
-    e = pHead;
 
     /* the givn last name to find */
     char input[MAX_LAST_NAME_SIZE] = "zyxel";
@@ -158,6 +154,7 @@ int main(int argc, char *argv[])
     cpu_time2 = diff_in_second(start, end);
 
     FILE *output;
+
 #if defined(OPT)
     output = fopen("opt.txt", "a");
 #else
