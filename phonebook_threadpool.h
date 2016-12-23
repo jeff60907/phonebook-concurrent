@@ -3,6 +3,9 @@
 
 #include <pthread.h>
 #include <time.h>
+#include "threadpool.h"
+#define THREADPOOL 1
+#define QUEUE 16
 
 #define MAX_LAST_NAME_SIZE 16
 
@@ -49,3 +52,4 @@ void show_entry(entry *pHead);
 static double diff_in_second(struct timespec t1, struct timespec t2);
 
 #endif
+

@@ -3,8 +3,11 @@
 #include <string.h>
 #include <strings.h>
 
-#include "phonebook_opt.h"
+#include "phonebook_threadpool.h"
 #include "debug.h"
+
+threadpool_t *pool;
+pthread_mutex_t lock;
 
 entry *findName(char lastname[], entry *pHead)
 {
@@ -43,9 +46,10 @@ append_a *new_append_a(char *ptr, char *eptr, int tid, int ntd,
 
 void append(void *arg)
 {
+    pthread_mutex_lock(&lock);
     struct timespec start, end;
     double cpu_time;
-
+    
     clock_gettime(CLOCK_REALTIME, &start);
 
     append_a *app = (append_a *) arg;
@@ -68,7 +72,7 @@ void append(void *arg)
 
     dprintf("thread take %lf sec, count %d\n", cpu_time, count);
 
-    pthread_exit(NULL);
+    pthread_mutex_unlock(&lock);
 }
 
 void show_entry(entry *pHead)
@@ -91,3 +95,4 @@ static double diff_in_second(struct timespec t1, struct timespec t2)
     }
     return (diff.tv_sec + diff.tv_nsec / 1000000000.0);
 }
+
